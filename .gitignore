@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/Application/bin/Debug/net6.0
+/Application/obj
+/Domain/bin/Debug/net6.0
+/Domain/obj
+/Infra/bin/Debug/net6.0
+/Infra/obj
+/wa-lanchonete_api/bin/Debug/net6.0
+/wa-lanchonete_api/obj
