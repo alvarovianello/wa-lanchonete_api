@@ -4,11 +4,11 @@ namespace Domain.Repositories
 {
     public interface ICustomerRepository
     {
-        Task<Customer> AddCustomer(Customer customer);
+        Task AddCustomer(Customer customer);
         Task<Customer> GetCustomerByCPF(string cpf);
+        Task<IEnumerable<Customer>> GetAllCustomer(string name, string email);
         Task<Customer> GetCustomerById(int id);
-        Customer UpdateCustomer(Customer customer);
-        void RemoveCustomer(Customer customer);
-        List<Customer> GetCustomers();
+        Task UpdateCustomer(Customer customer);
+        Task RemoveCustomer(Customer customer);
     }
 }

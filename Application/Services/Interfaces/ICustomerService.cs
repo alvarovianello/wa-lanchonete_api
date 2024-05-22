@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Contracts.Request;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Application.Services.Interfaces
@@ -7,9 +8,9 @@ namespace Application.Services.Interfaces
     {
         Task<IActionResult> GetCustomerByCpf(string cpf);
         Task<IActionResult> GetCustomerById(int id);
-        Task<IActionResult> RegisterCustomer(Customer customer);
-        Task<IActionResult> UpdateCustomer(Customer customer);
+        ValueTask<IActionResult> RegisterCustomer(CustomerPostRequest request);
+        Task<IActionResult> UpdateCustomer(CustomerPutRequest request);
         Task<IActionResult> RemoveCustomer(int cpf);
-        List<Customer> GetCustomers();
+        Task<IActionResult> GetAllCustomers(string name, string email);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.Services.Interfaces;
+﻿using Application.Contracts.Request;
+using Application.Services.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,17 +20,17 @@ namespace wa_lanchonete_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterCustomer(Customer customer)
+        public async Task<IActionResult> RegisterCustomer(CustomerPostRequest customer)
         {
             var returnRegisterCustomer = await _customerService.RegisterCustomer(customer);
 
             if (returnRegisterCustomer == null)
                 return NotFound();
 
-            return Ok(returnRegisterCustomer);
+            return returnRegisterCustomer;
         }
 
-        [HttpGet("{cpf}")]
+        [HttpGet("GetByCpf/{cpf}")]
         public async Task<IActionResult> GetCustomerByCpf(string cpf)
         {
             var customer = await _customerService.GetCustomerByCpf(cpf);
@@ -37,10 +38,10 @@ namespace wa_lanchonete_api.Controllers
             if (customer == null)
                 return NotFound();
 
-            return Ok(customer);
+            return customer;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetCustomerById(int id)
         {
             var customer = await _customerService.GetCustomerById(id);
@@ -48,22 +49,17 @@ namespace wa_lanchonete_api.Controllers
             if (customer == null)
                 return NotFound();
 
-            return Ok(customer);
+            return customer;
         }
 
         [HttpGet]
-        public List<Customer> GetCustomers()
+        public async Task<IActionResult> GetCustomers([FromQuery]string? name, [FromQuery] string? email)
         {
-            List<Customer> customers = _customerService.GetCustomers();
-
-            //if (customers.Count().Equals(0))
-            //    return customers;
-
-            return customers;
+            return await _customerService.GetAllCustomers(name, email);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateCustomer(Customer customer)
+        public async Task<IActionResult> UpdateCustomer(CustomerPutRequest customer)
         {
             var returnUpdateCustomer = await _customerService.UpdateCustomer(customer);
 

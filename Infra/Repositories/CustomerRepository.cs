@@ -1,53 +1,48 @@
 ﻿using Domain.Entities;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infra.Data.Repositories
 {
-    public class CustomerRepository : ICustomerRepository
+    public class CustomerRepository : Repository<Customer>, ICustomerRepository
     {
+        public CustomerRepository(LanchoneteDbContext context):base(context){}
 
-        private readonly LanchoneteDbContext _context;
-        public CustomerRepository(LanchoneteDbContext context)
+        public async Task AddCustomer(Customer customer)
         {
-            _context = context;
+            await CreateAsync(customer);
         }
-
-        public async Task<Customer> AddCustomer(Customer customer)
-        {
-            _context.Add(customer);
-            _context.SaveChanges();
-
-            return customer;
-        }
-
         public async Task<Customer> GetCustomerByCPF(string cpf)
         {
-            return await _context.Set<Customer>().FirstOrDefaultAsync(c => c.Cpf.Equals(cpf));
+            Expression<Func<Customer,bool>> predicate = entity => entity.Cpf == cpf;
+            return await GetSingleAsync(predicate);
+        }
+
+        public async Task<IEnumerable<Customer>> GetAllCustomer(string name, string email)
+        {
+            Expression<Func<Customer, bool>> predicate = entity => 
+                               (string.IsNullOrEmpty(name) || entity.Name.Contains(name))
+                            && (string.IsNullOrEmpty(email) || entity.Email.Equals(email));
+
+            return await GetListByFilterAsync(predicate, customer => customer.Name);
         }
 
         public async Task<Customer> GetCustomerById(int id)
         {
-            return await _context.Set<Customer>().FirstOrDefaultAsync(c => c.Id.Equals(id));
+            Expression<Func<Customer, bool>> predicate = entity => entity.Id == id;
+            return await GetSingleAsync(predicate);
         }
 
-        public Customer UpdateCustomer(Customer customer)
+        public async Task UpdateCustomer(Customer customer)
         {
-            _context.Update(customer);
-            _context.SaveChanges();
-
-            return customer;
+            await UpdateAsync(customer);
         }
 
-        public void RemoveCustomer(Customer customer)
+        public async Task RemoveCustomer(Customer customer)
         {
-            _context.Remove(customer);
-            _context.SaveChanges();
+           await DeleteAsync(customer);
         }
 
-        public List<Customer> GetCustomers()
-        {
-            return _context.Set<Customer>().OrderBy(c => c.Name).ToList();
-        }
     }
 }

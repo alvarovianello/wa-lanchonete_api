@@ -15,5 +15,5 @@ public partial class Customer
 
     public string? Email { get; set; }
 
-    public DateOnly? Birthdate { get; set; }
+    public DateTime? Birthdate { get; set; }
 }

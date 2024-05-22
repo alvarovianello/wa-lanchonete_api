@@ -1,4 +1,7 @@
-﻿using Application.Services.Interfaces;
+﻿using Application.Contracts.Request;
+using Application.Services.Interfaces;
+using Application.Validators;
+using AutoMapper;
 using Domain.Base;
 using Domain.Entities;
 using Domain.Repositories;
@@ -10,23 +13,33 @@ namespace Application.Services
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly IMapper _mapper;
 
-        public CustomerService(ICustomerRepository customerRepository)
+        public CustomerService(
+                                ICustomerRepository customerRepository,
+                                IMapper mapper)
         {
             _customerRepository = customerRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IActionResult> RegisterCustomer(Customer customer)
+        public async ValueTask<IActionResult> RegisterCustomer(CustomerPostRequest request)
         {
             try
             {
-                var returnGetCustomerByCpf = await _customerRepository.GetCustomerByCPF(customer.Cpf);
+                var validator = await new CustomerPostRequestValidator().ValidateAsync(request);
+
+                if (!validator.IsValid)
+                    return new ResultObject(HttpStatusCode.BadRequest, validator);
+
+                var returnGetCustomerByCpf = await _customerRepository.GetCustomerByCPF(request.Cpf);
 
                 if (returnGetCustomerByCpf == null)
                 {
-                    var returnAddCustomer = await _customerRepository.AddCustomer(customer);
+                    Customer customer = _mapper.Map<Customer>(request);
+                    await _customerRepository.AddCustomer(customer);
 
-                    if (returnAddCustomer != null)
+                    if (customer != null)
                         return new ResultObject(HttpStatusCode.OK, new { Success = "Conta cadastrada com sucesso" });
                     else
                         return new ResultObject(HttpStatusCode.BadRequest, new { Error = "Houve um erro ao realizar o cadastro da conta" });
@@ -76,21 +89,21 @@ namespace Application.Services
             }
         }
 
-        public List<Customer> GetCustomers()
+        public async Task<IActionResult> GetAllCustomers(string name, string email)
         {
-            List<Customer> customers = new List<Customer>();
             try
             {
-                return customers = _customerRepository.GetCustomers();
-
+                var listCustomers = await _customerRepository.GetAllCustomer(name, email);
+                return new ResultObject(HttpStatusCode.OK, listCustomers);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+
+                return new ResultObject(HttpStatusCode.BadRequest, ex);
             }
         }
 
-        public async Task<IActionResult> UpdateCustomer(Customer customer)
+        public async Task<IActionResult> UpdateCustomer(CustomerPutRequest customer)
         {
             try
             {
@@ -105,7 +118,7 @@ namespace Application.Services
 
                     var returnUpdateCustomer = _customerRepository.UpdateCustomer(returnGetCustomerByCpf);
 
-                    if(returnUpdateCustomer != null)
+                    if (returnUpdateCustomer != null)
                         return new ResultObject(HttpStatusCode.OK, new { Success = "Dados cadastrais alterados com sucesso" });
                     else
                         return new ResultObject(HttpStatusCode.BadRequest, new { Error = "Houve um erro ao realizar o cadastro da conta" });
@@ -127,8 +140,8 @@ namespace Application.Services
 
                 if (returnGetCustomerByCpf != null)
                 {
-                     _customerRepository.RemoveCustomer(returnGetCustomerByCpf);
-                        return new ResultObject(HttpStatusCode.OK, new { Success = "Conta removida com sucesso" });
+                    _customerRepository.RemoveCustomer(returnGetCustomerByCpf);
+                    return new ResultObject(HttpStatusCode.OK, new { Success = "Conta removida com sucesso" });
                 }
                 else
                     return new ResultObject(HttpStatusCode.AlreadyReported, new { Warn = "Cadastro de cliente não encontrado" });
