@@ -53,13 +53,13 @@ CREATE TABLE dbo.Payment (
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO Category (name, description) VALUES
+INSERT INTO dbo.Category (name, description) VALUES
 ('Lanche', 'Sanduíches e hambúrgueres variados'),
 ('Acompanhamento', 'Batatas fritas, saladas e outros acompanhamentos'),
 ('Bebida', 'Refrigerantes, sucos e outras bebidas'),
 ('Sobremesa', 'Sobremesas diversas');
 
-INSERT INTO Product (name, description, price, category_id) VALUES
+INSERT INTO dbo.Product (name, description, price, category_id) VALUES
 ('Cheeseburger', 'Hambúrguer com queijo', 10.00, 1),
 ('Batata Frita', 'Porção de batatas fritas', 5.00, 2),
 ('Refrigerante', 'Coca-Cola 350ml', 3.00, 3),
