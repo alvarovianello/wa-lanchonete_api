@@ -2,7 +2,6 @@
 {
     public class CustomerPutRequest
     {
-        public int Id { get; set; }
         public string Name { get; set; } = null!;
 
         public string Cpf { get; set; } = null!;

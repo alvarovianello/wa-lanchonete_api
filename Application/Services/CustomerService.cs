@@ -111,7 +111,7 @@ namespace Application.Services
             {
                 var returnGetCustomerByCpf = await _customerRepository.GetCustomerByCPF(customerPutRequest.Cpf);
 
-                if (returnGetCustomerByCpf != null)
+                if (returnGetCustomerByCpf == null)
                     return new ResultObject(HttpStatusCode.AlreadyReported, new { Warn = "Cadastro de cliente não encontrado" });
 
                 Customer customer = _mapper.Map<Customer>(customerPutRequest);
