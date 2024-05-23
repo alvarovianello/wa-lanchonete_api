@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.Validators.ValidatorsCategory
 {
-    public class CategoryPostRequestValidator : AbstractValidator<CategoryPostRequest>
+    public sealed class CategoryPostRequestValidator : AbstractValidator<CategoryPostRequest>
     {
         public CategoryPostRequestValidator()
         {

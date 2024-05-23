@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Application.Validators.ValidatorsCategory
 {
-    public class CategoryPutRequestValidator : AbstractValidator<CategoryPutRequest>
+    public sealed class CategoryPutRequestValidator : AbstractValidator<CategoryPutRequest>
     {
         public CategoryPutRequestValidator()
         {

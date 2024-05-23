@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Base;
 using Domain.Entities;
 using Domain.Repositories;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -99,27 +100,27 @@ namespace Application.Services
             }
         }
 
-        public async Task<IActionResult> UpdateCustomer(CustomerPutRequest customer)
+        public async Task<IActionResult> UpdateCustomer(CustomerPutRequest customerPutRequest)
         {
+            var validator = await new CustomerPuttRequestValidator().ValidateAsync(customerPutRequest);
+
+            if (!validator.IsValid)
+                return new ResultObject(HttpStatusCode.BadRequest, validator);
+
             try
             {
-                Customer returnGetCustomerByCpf = await _customerRepository.GetCustomerByCPF(customer.Cpf);
+                var returnGetCustomerByCpf = await _customerRepository.GetCustomerByCPF(customerPutRequest.Cpf);
 
                 if (returnGetCustomerByCpf != null)
-                {
-                    returnGetCustomerByCpf.Name = customer.Name;
-                    returnGetCustomerByCpf.Cellphone = customer.Cellphone;
-                    returnGetCustomerByCpf.Email = customer.Email;
-
-                    var returnUpdateCustomer = _customerRepository.UpdateCustomer(returnGetCustomerByCpf);
-
-                    if (returnUpdateCustomer != null)
-                        return new ResultObject(HttpStatusCode.OK, new { Success = "Dados cadastrais alterados com sucesso" });
-                    else
-                        return new ResultObject(HttpStatusCode.BadRequest, new { Error = "Houve um erro ao realizar o cadastro da conta" });
-                }
-                else
                     return new ResultObject(HttpStatusCode.AlreadyReported, new { Warn = "Cadastro de cliente não encontrado" });
+
+                Customer customer = _mapper.Map<Customer>(customerPutRequest);
+                await _customerRepository.UpdateCustomer(customer);
+
+                if (customer == null)
+                    return new ResultObject(HttpStatusCode.BadRequest, new { Error = "Houve um erro ao realizar o cadastro da conta" });
+
+                return new ResultObject(HttpStatusCode.OK, new { Success = "Dados cadastrais alterados com sucesso" });
             }
             catch (Exception ex)
             {
