@@ -19,8 +19,10 @@ namespace wa_lanchonete_api.Extensions
 
             services.AddTransient<ICustomerService, CustomerService>();            
             services.AddTransient<ICustomerRepository, CustomerRepository>();
+
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
+
             services.AddTransient<IDbConnectionFactory, DbConnectionFactory>((ctx) =>
             {
                 return new DbConnectionFactory(connectionString);

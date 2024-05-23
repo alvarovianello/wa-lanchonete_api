@@ -19,13 +19,9 @@ namespace Infra.Data.Repositories
             return await GetSingleAsync(predicate);
         }
 
-        public async Task<IEnumerable<Customer>> GetAllCustomer(string name, string email)
+        public async Task<IEnumerable<Customer>> GetAllCustomer()
         {
-            Expression<Func<Customer, bool>> predicate = entity => 
-                               (string.IsNullOrEmpty(name) || entity.Name.Contains(name))
-                            && (string.IsNullOrEmpty(email) || entity.Email.Equals(email));
-
-            return await GetListByFilterAsync(predicate, customer => customer.Name);
+            return await GetAllAsync();
         }
 
         public async Task<Customer> GetCustomerById(int id)
@@ -43,6 +39,5 @@ namespace Infra.Data.Repositories
         {
            await DeleteAsync(customer);
         }
-
     }
 }

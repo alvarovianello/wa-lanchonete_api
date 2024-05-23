@@ -1,4 +1,4 @@
-﻿using Application.Contracts.Request;
+﻿using Application.Contracts.Request.RequestCustomer;
 using Application.Services.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -53,9 +53,9 @@ namespace wa_lanchonete_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCustomers([FromQuery]string? name, [FromQuery] string? email)
+        public async Task<IActionResult> GetCustomers()
         {
-            return await _customerService.GetAllCustomers(name, email);
+            return await _customerService.GetAllCustomers();
         }
 
         [HttpPut]
@@ -66,7 +66,7 @@ namespace wa_lanchonete_api.Controllers
             if (returnUpdateCustomer == null)
                 return NotFound();
 
-            return Ok();
+            return returnUpdateCustomer;
         }
 
         [HttpDelete("{id}")]

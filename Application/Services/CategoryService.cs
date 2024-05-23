@@ -1,4 +1,8 @@
-﻿using Application.Services.Interfaces;
+﻿using Application.Contracts.Request.RequestCategory;
+using Application.Services.Interfaces;
+using Application.Validators;
+using Application.Validators.ValidatorsCategory;
+using AutoMapper;
 using Domain.Base;
 using Domain.Entities;
 using Domain.Repositories;
@@ -10,24 +14,32 @@ namespace Application.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
-        public CategoryService(ICategoryRepository categoryRepository)
+        public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IActionResult> RegisterCategory(Category category)
+        public async ValueTask<IActionResult> RegisterCategory(CategoryPostRequest categoryRequest)
         {
+            var validator = await new CategoryPostRequestValidator().ValidateAsync(categoryRequest);
+
+            if (!validator.IsValid)
+                return new ResultObject(HttpStatusCode.BadRequest, validator);
+
             try
             {
-                var returnGetCategoryByName = await _categoryRepository.GetCategoryByName(category.Name);
+                var returnGetCategoryByName = await _categoryRepository.GetCategoryByName(categoryRequest.Name);
 
                 if (returnGetCategoryByName != null)
                     return new ResultObject(HttpStatusCode.AlreadyReported, new { Warn = "O nome de categoria informado já possui cadastro" });
 
-                var returnRegisterCategory = await _categoryRepository.RegisterCategory(category);
+                Category category = _mapper.Map<Category>(categoryRequest);
+                await _categoryRepository.RegisterCategory(category);
 
-                if (returnRegisterCategory == null)
+                if (category == null)
                     return new ResultObject(HttpStatusCode.BadRequest, new { Error = "Houve um erro ao realizar o cadastro da categoria" });
 
                 return new ResultObject(HttpStatusCode.OK, new { Success = "Categoria cadastrada com sucesso" });
@@ -58,11 +70,9 @@ namespace Application.Services
 
         public async Task<IActionResult> GetCategoryByName(string name)
         {
-            Category category = new Category();
-
             try
             {
-                category = await _categoryRepository.GetCategoryByName(name);
+                Category category = await _categoryRepository.GetCategoryByName(name);
 
                 if (category == null)
                     return new ResultObject(HttpStatusCode.NotFound, new { Info = "Categoria não encontrada" });
@@ -72,6 +82,48 @@ namespace Application.Services
             catch (Exception ex)
             {
                 return new ResultObject(HttpStatusCode.InternalServerError, new { Error = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> GetAllCategories()
+        {
+            try
+            {
+                var listCategories = await _categoryRepository.GetAllCategories();
+                return new ResultObject(HttpStatusCode.OK, listCategories);
+            }
+            catch (Exception ex)
+            {
+                return new ResultObject(HttpStatusCode.BadRequest, ex);
+            }
+        }
+
+        public async Task<IActionResult> UpdateCategory(CategoryPutRequest categoryPutRequest)
+        {
+            var validator = await new CategoryPutRequestValidator().ValidateAsync(categoryPutRequest);
+
+            if (!validator.IsValid)
+                return new ResultObject(HttpStatusCode.BadRequest, validator);
+
+            try
+            {
+                var returnGetCategoryByName = await _categoryRepository.GetCategoryByName(categoryPutRequest.Name);
+
+                if (returnGetCategoryByName != null)
+                    return new ResultObject(HttpStatusCode.AlreadyReported, new { Warn = "O nome de categoria informado já possui cadastro" });
+
+                Category category = _mapper.Map<Category>(categoryPutRequest);
+                await _categoryRepository.UpdateCategory(category);
+
+                if (category == null)
+                    return new ResultObject(HttpStatusCode.BadRequest, new { Error = "Houve um erro ao realizar a alteração da categoria" });
+
+                return new ResultObject(HttpStatusCode.OK, category);
+
+            }
+            catch (Exception ex)
+            {
+                return new ResultObject(HttpStatusCode.BadRequest, ex);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace Application.Contracts.Request
+﻿namespace Application.Contracts.Request.RequestCustomer
 {
     public class CustomerGetRequest
     {

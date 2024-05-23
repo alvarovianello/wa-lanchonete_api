@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using Application.Contracts.Request.RequestCategory;
+using Application.Services;
 using Application.Services.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -16,14 +17,14 @@ namespace wa_lanchonete_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterCategory(Category category)
+        public async Task<IActionResult> RegisterCategory(CategoryPostRequest category)
         {
             var returnRegisterCategory = await _categoryService.RegisterCategory(category);
 
             if (returnRegisterCategory == null)
                 return NotFound();
 
-            return Ok(returnRegisterCategory);
+            return returnRegisterCategory;
         }
 
         [HttpGet("getCategoryById/{id}")]
@@ -34,7 +35,7 @@ namespace wa_lanchonete_api.Controllers
             if (category == null)
                 return NotFound();
 
-            return Ok(category);
+            return category;
         }
 
         [HttpGet("getCategoryByName/{name}")]
@@ -45,7 +46,24 @@ namespace wa_lanchonete_api.Controllers
             if (category == null)
                 return NotFound();
 
-            return Ok(category);
+            return category;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            return await _categoryService.GetAllCategories();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateCategory(CategoryPutRequest categoryPutRequest)
+        {
+            var returnUpdateCategory = await _categoryService.UpdateCategory(categoryPutRequest);
+
+            if(returnUpdateCategory == null)
+                return NotFound();
+
+            return returnUpdateCategory;
         }
     }
 }

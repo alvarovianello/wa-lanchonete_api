@@ -1,6 +1,6 @@
-﻿using Application.Contracts.Request;
+﻿using Application.Contracts.Request.RequestCustomer;
 using Application.Services.Interfaces;
-using Application.Validators;
+using Application.Validators.ValidatorsCustomer;
 using AutoMapper;
 using Domain.Base;
 using Domain.Entities;
@@ -15,28 +15,26 @@ namespace Application.Services
         private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
 
-        public CustomerService(
-                                ICustomerRepository customerRepository,
-                                IMapper mapper)
+        public CustomerService(ICustomerRepository customerRepository, IMapper mapper)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
         }
 
-        public async ValueTask<IActionResult> RegisterCustomer(CustomerPostRequest request)
+        public async ValueTask<IActionResult> RegisterCustomer(CustomerPostRequest customerRequest)
         {
             try
             {
-                var validator = await new CustomerPostRequestValidator().ValidateAsync(request);
+                var validator = await new CustomerPostRequestValidator().ValidateAsync(customerRequest);
 
                 if (!validator.IsValid)
                     return new ResultObject(HttpStatusCode.BadRequest, validator);
 
-                var returnGetCustomerByCpf = await _customerRepository.GetCustomerByCPF(request.Cpf);
+                var returnGetCustomerByCpf = await _customerRepository.GetCustomerByCPF(customerRequest.Cpf);
 
                 if (returnGetCustomerByCpf == null)
                 {
-                    Customer customer = _mapper.Map<Customer>(request);
+                    Customer customer = _mapper.Map<Customer>(customerRequest);
                     await _customerRepository.AddCustomer(customer);
 
                     if (customer != null)
@@ -72,11 +70,9 @@ namespace Application.Services
 
         public async Task<IActionResult> GetCustomerById(int id)
         {
-            Customer customer = new Customer();
-
             try
             {
-                customer = await _customerRepository.GetCustomerById(id);
+                Customer customer = await _customerRepository.GetCustomerById(id);
 
                 if (customer == null)
                     return new ResultObject(HttpStatusCode.NotFound, new { Info = "Cliente não encontrado" });
@@ -89,11 +85,11 @@ namespace Application.Services
             }
         }
 
-        public async Task<IActionResult> GetAllCustomers(string name, string email)
+        public async Task<IActionResult> GetAllCustomers()
         {
             try
             {
-                var listCustomers = await _customerRepository.GetAllCustomer(name, email);
+                var listCustomers = await _customerRepository.GetAllCustomer();
                 return new ResultObject(HttpStatusCode.OK, listCustomers);
             }
             catch (Exception ex)
@@ -114,7 +110,6 @@ namespace Application.Services
                     returnGetCustomerByCpf.Name = customer.Name;
                     returnGetCustomerByCpf.Cellphone = customer.Cellphone;
                     returnGetCustomerByCpf.Email = customer.Email;
-                    returnGetCustomerByCpf.Birthdate = customer.Birthdate;
 
                     var returnUpdateCustomer = _customerRepository.UpdateCustomer(returnGetCustomerByCpf);
 

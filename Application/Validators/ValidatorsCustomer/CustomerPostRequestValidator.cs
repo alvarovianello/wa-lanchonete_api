@@ -1,12 +1,7 @@
-﻿using Application.Contracts.Request;
+﻿using Application.Contracts.Request.RequestCustomer;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Validators
+namespace Application.Validators.ValidatorsCustomer
 {
     public sealed class CustomerPostRequestValidator : AbstractValidator<CustomerPostRequest>
     {

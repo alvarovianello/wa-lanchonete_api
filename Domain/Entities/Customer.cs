@@ -14,6 +14,4 @@ public partial class Customer
     public string? Cellphone { get; set; }
 
     public string? Email { get; set; }
-
-    public DateTime? Birthdate { get; set; }
 }

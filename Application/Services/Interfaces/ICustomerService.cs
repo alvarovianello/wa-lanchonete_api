@@ -1,4 +1,4 @@
-﻿using Application.Contracts.Request;
+﻿using Application.Contracts.Request.RequestCustomer;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +11,6 @@ namespace Application.Services.Interfaces
         ValueTask<IActionResult> RegisterCustomer(CustomerPostRequest request);
         Task<IActionResult> UpdateCustomer(CustomerPutRequest request);
         Task<IActionResult> RemoveCustomer(int cpf);
-        Task<IActionResult> GetAllCustomers(string name, string email);
+        Task<IActionResult> GetAllCustomers();
     }
 }

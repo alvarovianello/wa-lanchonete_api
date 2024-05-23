@@ -31,6 +31,9 @@ public partial class LanchoneteDbContext : DbContext
             entity.ToTable("category", "dbo");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Description)
+                .HasMaxLength(150)
+                .HasColumnName("description");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
@@ -45,7 +48,6 @@ public partial class LanchoneteDbContext : DbContext
             entity.HasIndex(e => e.Cpf, "customer_cpf_key").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Birthdate).HasColumnName("birthdate");
             entity.Property(e => e.Cellphone)
                 .HasMaxLength(11)
                 .IsFixedLength()

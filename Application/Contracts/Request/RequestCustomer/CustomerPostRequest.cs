@@ -1,6 +1,6 @@
-﻿namespace Application.Contracts.Request
+﻿namespace Application.Contracts.Request.RequestCustomer
 {
-    public class CustomerPutRequest
+    public class CustomerPostRequest
     {
         public string Name { get; set; } = null!;
 
@@ -9,7 +9,5 @@
         public string? Cellphone { get; set; }
 
         public string? Email { get; set; }
-
-        public DateTime? Birthdate { get; set; }
     }
 }

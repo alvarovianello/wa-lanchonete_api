@@ -27,6 +27,11 @@ namespace Infra.Data.Repositories
             return await _set.FindAsync(id);
         }
 
+        public async Task<List<T?>> GetAllAsync()
+        {
+            return await _set.ToListAsync();
+        }
+
         public async Task<T?> GetSingleAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
         {
             try
@@ -96,6 +101,7 @@ namespace Infra.Data.Repositories
         public async Task CreateAsync(T entity)
         {
             await _set.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
         public async Task CreateRangeAsync(IEnumerable<T> entities)
         {
