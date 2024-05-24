@@ -22,7 +22,7 @@ namespace Infra.Data.Repositories
             _set = _context.Set<T>();
         }
 
-        public async Task<T?> GetAsync(int id)
+        public async Task<T?> GetByIdAsync(int id)
         {
             return await _set.FindAsync(id);
         }
@@ -98,32 +98,42 @@ namespace Infra.Data.Repositories
             return await _set.CountAsync(expression);
         }
 
-        public async Task CreateAsync(T entity)
+        public async Task<T> CreateAsync(T entity)
         {
             await _set.AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
+
         public async Task CreateRangeAsync(IEnumerable<T> entities)
         {
             await _set.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
-            await Task.Run(() => _set.Update(entity));
-            await _context.SaveChangesAsync();
+            _set.Update(entity);
+            return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task DeleteAsync(T entity)
+        public async Task<bool> DeleteAsync(int id)
         {
-            await Task.Run(() => _set.Remove(entity));
+            var entity = await GetByIdAsync(id);
+            if (entity == null)
+            {
+                return false;
+            }
+
+            _set.Remove(entity);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }
+
 
         protected virtual void Dispose(bool disposing)
         {

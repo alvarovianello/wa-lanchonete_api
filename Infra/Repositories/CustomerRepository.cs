@@ -1,6 +1,5 @@
 ﻿using Domain.Entities;
 using Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Infra.Data.Repositories
@@ -35,9 +34,9 @@ namespace Infra.Data.Repositories
             await UpdateAsync(customer);
         }
 
-        public async Task RemoveCustomer(Customer customer)
+        public async Task RemoveCustomer(int id)
         {
-           await DeleteAsync(customer);
+           await DeleteAsync(id);
         }
     }
 }

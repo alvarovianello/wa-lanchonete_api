@@ -112,13 +112,13 @@ namespace Application.Services
                 if (returnGetCategoryByName != null)
                     return new ResultObject(HttpStatusCode.AlreadyReported, new { Warn = "O nome de categoria informado já possui cadastro" });
 
-                Category category = _mapper.Map<Category>(categoryPutRequest);
-                await _categoryRepository.UpdateCategory(category);
+                returnGetCategoryByName = _mapper.Map<Category>(categoryPutRequest);
+                await _categoryRepository.UpdateCategory(returnGetCategoryByName);
 
-                if (category == null)
+                if (returnGetCategoryByName == null)
                     return new ResultObject(HttpStatusCode.BadRequest, new { Error = "Houve um erro ao realizar a alteração da categoria" });
 
-                return new ResultObject(HttpStatusCode.OK, category);
+                return new ResultObject(HttpStatusCode.OK, returnGetCategoryByName);
 
             }
             catch (Exception ex)

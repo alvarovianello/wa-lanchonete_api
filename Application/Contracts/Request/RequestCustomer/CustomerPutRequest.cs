@@ -6,8 +6,6 @@
 
         public string Cpf { get; set; } = null!;
 
-        public string? Cellphone { get; set; }
-
         public string? Email { get; set; }
     }
 }

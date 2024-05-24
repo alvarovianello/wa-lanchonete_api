@@ -5,7 +5,6 @@ using AutoMapper;
 using Domain.Base;
 using Domain.Entities;
 using Domain.Repositories;
-using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -52,38 +51,14 @@ namespace Application.Services
             }
         }
 
-        public async Task<IActionResult> GetCustomerByCpf(string cpf)
+        public async Task<Customer> GetCustomerByCpf(string cpf)
         {
-            try
-            {
-                Customer customer = await _customerRepository.GetCustomerByCPF(cpf);
-
-                if (customer == null)
-                    return new ResultObject(HttpStatusCode.NotFound, new { Info = "CPF não encontrado" });
-                else
-                    return new ResultObject(HttpStatusCode.OK, customer);
-            }
-            catch (Exception ex)
-            {
-                return new ResultObject(HttpStatusCode.InternalServerError, new { Error = ex.Message });
-            }
+            return await _customerRepository.GetCustomerByCPF(cpf);
         }
 
-        public async Task<IActionResult> GetCustomerById(int id)
+        public async Task<Customer> GetCustomerById(int id)
         {
-            try
-            {
-                Customer customer = await _customerRepository.GetCustomerById(id);
-
-                if (customer == null)
-                    return new ResultObject(HttpStatusCode.NotFound, new { Info = "Cliente não encontrado" });
-                else
-                    return new ResultObject(HttpStatusCode.OK, customer);
-            }
-            catch (Exception ex)
-            {
-                return new ResultObject(HttpStatusCode.InternalServerError, new { Error = ex.Message });
-            }
+            return await _customerRepository.GetCustomerById(id);
         }
 
         public async Task<IActionResult> GetAllCustomers()
@@ -114,10 +89,12 @@ namespace Application.Services
                 if (returnGetCustomerByCpf == null)
                     return new ResultObject(HttpStatusCode.AlreadyReported, new { Warn = "Cadastro de cliente não encontrado" });
 
-                Customer customer = _mapper.Map<Customer>(customerPutRequest);
-                await _customerRepository.UpdateCustomer(customer);
+                returnGetCustomerByCpf.Name = customerPutRequest.Name;
+                returnGetCustomerByCpf.Email = customerPutRequest.Email;
 
-                if (customer == null)
+                await _customerRepository.UpdateCustomer(returnGetCustomerByCpf);
+
+                if (returnGetCustomerByCpf == null)
                     return new ResultObject(HttpStatusCode.BadRequest, new { Error = "Houve um erro ao realizar o cadastro da conta" });
 
                 return new ResultObject(HttpStatusCode.OK, new { Success = "Dados cadastrais alterados com sucesso" });
@@ -132,15 +109,8 @@ namespace Application.Services
         {
             try
             {
-                Customer returnGetCustomerByCpf = await _customerRepository.GetCustomerById(id);
-
-                if (returnGetCustomerByCpf != null)
-                {
-                    _customerRepository.RemoveCustomer(returnGetCustomerByCpf);
-                    return new ResultObject(HttpStatusCode.OK, new { Success = "Conta removida com sucesso" });
-                }
-                else
-                    return new ResultObject(HttpStatusCode.AlreadyReported, new { Warn = "Cadastro de cliente não encontrado" });
+                _customerRepository.RemoveCustomer(id);
+                return new ResultObject(HttpStatusCode.OK, new { Success = "Conta removida com sucesso" });
             }
             catch (Exception ex)
             {

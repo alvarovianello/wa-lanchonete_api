@@ -1,6 +1,7 @@
 ﻿using Application.Services;
 using Application.Services.Interfaces;
 using Domain.Base;
+using Domain.Entities;
 using Domain.Repositories;
 using Infra.Data;
 using Infra.Data.Base;
@@ -22,6 +23,17 @@ namespace wa_lanchonete_api.Extensions
 
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
+
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IRepository<Product>, Repository<Product>>();
+
+            services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddTransient<IRepository<Order>, Repository<Order>>();
+            services.AddTransient<IRepository<Orderitem>, Repository<Orderitem>>();
+            services.AddTransient<IRepository<Payment>, Repository<Payment>>();
+            services.AddTransient<IRepository<Orderstatus>, Repository<Orderstatus>>();
+            
 
             services.AddTransient<IDbConnectionFactory, DbConnectionFactory>((ctx) =>
             {

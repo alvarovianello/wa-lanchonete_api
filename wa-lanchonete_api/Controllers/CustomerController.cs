@@ -36,9 +36,9 @@ namespace wa_lanchonete_api.Controllers
             var customer = await _customerService.GetCustomerByCpf(cpf);
 
             if (customer == null)
-                return NotFound();
+                return NotFound(new { Info = "CPF não encontrado" });
 
-            return customer;
+            return Ok(customer);
         }
 
         [HttpGet("GetById/{id}")]
@@ -49,7 +49,7 @@ namespace wa_lanchonete_api.Controllers
             if (customer == null)
                 return NotFound();
 
-            return customer;
+            return Ok(customer);
         }
 
         [HttpGet]

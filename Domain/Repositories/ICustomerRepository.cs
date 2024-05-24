@@ -9,6 +9,6 @@ namespace Domain.Repositories
         Task<IEnumerable<Customer>> GetAllCustomer();
         Task<Customer> GetCustomerById(int id);
         Task UpdateCustomer(Customer customer);
-        Task RemoveCustomer(Customer customer);
+        Task RemoveCustomer(int id);
     }
 }
